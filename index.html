@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Math Test - Daily Practice</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>🧮 AI Math Test</h1>
+                <p class="date" id="currentDate"></p>
+            </div>
+            <div class="header-right">
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Score</span>
+                        <span class="stat-value" id="scoreDisplay">0/0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Accuracy</span>
+                        <span class="stat-value" id="accuracyDisplay">0%</span>
+                    </div>
+                </div>
+                <button id="logsBtn" class="btn-secondary">📋 Logs</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Start Screen -->
+            <div id="startScreen" class="screen active">
+                <div class="start-content">
+                    <h2>Welcome to Daily Math Practice!</h2>
+                    <p>Practice arithmetic with AI-generated questions that change daily.</p>
+                    
+                    <div class="difficulty-selector">
+                        <h3>Select Difficulty Level:</h3>
+                        <div class="difficulty-buttons">
+                            <button class="difficulty-btn" data-level="easy">
+                                <span class="level-emoji">🟢</span>
+                                <span class="level-name">Easy</span>
+                                <span class="level-desc">Single digits</span>
+                            </button>
+                            <button class="difficulty-btn active" data-level="medium">
+                                <span class="level-emoji">🟡</span>
+                                <span class="level-name">Medium</span>
+                                <span class="level-desc">Up to 100</span>
+                            </button>
+                            <button class="difficulty-btn" data-level="hard">
+                                <span class="level-emoji">🔴</span>
+                                <span class="level-name">Hard</span>
+                                <span class="level-desc">Up to 1000</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="question-type-selector">
+                        <h3>Question Types:</h3>
+                        <div class="type-checkboxes">
+                            <label><input type="checkbox" value="addition" checked> Addition</label>
+                            <label><input type="checkbox" value="subtraction" checked> Subtraction</label>
+                            <label><input type="checkbox" value="multiplication" checked> Multiplication</label>
+                            <label><input type="checkbox" value="division" checked> Division</label>
+                            <label><input type="checkbox" value="mixed" checked> Mixed Operations</label>
+                        </div>
+                    </div>
+
+                    <div class="time-limit-selector">
+                        <h3>Time per Question:</h3>
+                        <div class="time-buttons">
+                            <button class="time-btn" data-time="30">30 sec</button>
+                            <button class="time-btn active" data-time="60">1 min</button>
+                            <button class="time-btn" data-time="120">2 min</button>
+                        </div>
+                    </div>
+
+                    <button id="startBtn" class="btn-primary btn-large">Start Test</button>
+                    <button id="startReasoningBtn" class="btn-secondary btn-large" style="margin-top:12px;" onclick="(window.mathApp && window.mathApp.startReasoning) ? window.mathApp.startReasoning() : alert('App not ready yet')">Practice Reasoning (30 Qs)</button>
+                </div>
+            </div>
+
+            <!-- Test Screen -->
+            <div id="testScreen" class="screen">
+                <div class="test-container">
+                    <!-- Progress Bar -->
+                    <div class="progress-section">
+                        <div class="progress-info">
+                            <span>Question <span id="currentQuestion">1</span> of <span id="totalQuestions">10</span></span>
+                            <span id="difficultyDisplay" class="difficulty-badge"></span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progressFill" class="progress-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question Area -->
+                    <div class="question-area">
+                        <div class="timer-circle">
+                            <svg viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" class="timer-circle-bg"></circle>
+                                <circle cx="50" cy="50" r="45" class="timer-circle-progress" id="timerCircle"></circle>
+                            </svg>
+                            <div class="timer-text">
+                                <span id="timerDisplay">60</span>s
+                            </div>
+                        </div>
+
+                        <div class="question-box">
+                            <div id="questionText" class="question-text"></div>
+                            <div class="difficulty-indicator" id="difficultyIndicator"></div>
+                        </div>
+                    </div>
+
+                    <!-- Answer Input -->
+                    <div class="answer-section">
+                            <input 
+                                type="text" 
+                                id="answerInput" 
+                                placeholder="Enter your answer" 
+                                class="answer-input"
+                            >
+                        <button id="submitBtn" class="btn-primary">Submit</button>
+                    </div>
+
+                    <!-- Feedback -->
+                    <div id="feedbackArea" class="feedback-area hidden">
+                        <div id="feedbackContent"></div>
+                        <button id="nextBtn" class="btn-primary">Next Question</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div id="resultsScreen" class="screen">
+                <div class="results-container">
+                    <h2>Test Complete! 🎉</h2>
+                    
+                    <div class="score-circle">
+                        <svg viewBox="0 0 200 200">
+                            <circle cx="100" cy="100" r="90" class="score-circle-bg"></circle>
+                            <circle cx="100" cy="100" r="90" class="score-circle-progress" id="scoreCircle"></circle>
+                        </svg>
+                        <div class="score-display">
+                            <div class="final-score" id="finalScore">10/10</div>
+                            <div class="final-accuracy" id="finalAccuracy">100%</div>
+                        </div>
+                    </div>
+
+                    <div class="results-stats">
+                        <div class="result-stat">
+                            <span class="stat-label">Correct Answers</span>
+                            <span class="stat-value" id="correctAnswers">10</span>
+                        </div>
+                        <div class="result-stat">
+                            <span class="stat-label">Total Time</span>
+                            <span class="stat-value" id="totalTime">2m 30s</span>
+                        </div>
+                        <div class="result-stat">
+                            <span class="stat-label">Avg Time/Q</span>
+                            <span class="stat-value" id="avgTime">15s</span>
+                        </div>
+                        <div class="result-stat">
+                            <span class="stat-label">Difficulty</span>
+                            <span class="stat-value" id="difficultyResult">Medium</span>
+                        </div>
+                    </div>
+
+                    <div class="performance-message" id="performanceMessage"></div>
+
+                    <div class="results-actions">
+                        <button id="retakeBtn" class="btn-primary">Take Test Again</button>
+                        <button id="reviewBtn" class="btn-secondary">Review Answers</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review Screen -->
+            <div id="reviewScreen" class="screen">
+                <div class="review-container">
+                    <div class="review-header">
+                        <h2>Review Your Answers</h2>
+                        <button id="closeReviewBtn" class="close-btn">✕</button>
+                    </div>
+                    <div id="reviewContent" class="review-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs Modal -->
+        <div id="logsModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Test Logs & History</h2>
+                    <button id="closeLogsBtn" class="close-btn">✕</button>
+                </div>
+                <div id="logsContent" class="logs-content"></div>
+                <div class="modal-footer">
+                    <button id="downloadLogsBtn" class="btn-primary">📥 Download Logs</button>
+                    <button id="clearLogsBtn" class="btn-danger">🗑️ Clear Logs</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Fallback initializer: if the app wasn't created via DOMContentLoaded, create it now.
+        (function(){
+            try {
+                if (!window.mathApp && typeof MathTestApp === 'function') {
+                    window.mathApp = new MathTestApp();
+                }
+            } catch (e) {
+                console.error('Failed to initialize MathTestApp fallback:', e);
+            }
+        })();
+    </script>
+</body>
+</html>
