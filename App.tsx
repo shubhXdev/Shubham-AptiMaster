@@ -3,6 +3,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import QuizScreen from './components/QuizScreen';
 import ResultsScreen from './components/ResultsScreen';
 import AnalyticsScreen from './components/AnalyticsScreen';
+import BrandLogo from './components/BrandLogo';
 import { QuizConfig, Question, QuizState, Subject } from './types';
 import { generateQuestions } from './services/geminiService';
 
@@ -52,28 +53,28 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-zinc-950 font-inter selection:bg-amber-500 selection:text-black">
       {appState !== 'quiz' && (
         <nav className="bg-zinc-900/80 backdrop-blur-md border-b border-zinc-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50 no-print">
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={handleRestart}>
-            <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-600 rounded-xl flex items-center justify-center text-black font-bold text-xl shadow-lg shadow-amber-900/20 group-hover:scale-105 transition-transform">
-              S
-            </div>
+          <div className="flex items-center gap-4 cursor-pointer group" onClick={handleRestart}>
+            <BrandLogo size={44} className="group-hover:scale-110 transition-transform duration-300" />
             <div>
-               <span className="font-bold text-xl tracking-tight text-white font-space">Shubham <span className="text-amber-500">AptiMaster</span></span>
-               <div className="text-[10px] text-zinc-500 uppercase tracking-widest leading-none">Govt Exam Specialist</div>
+               <span className="font-bold text-xl tracking-tight text-white font-space">
+                 Shubham <span className="text-amber-500">AptiMaster</span>
+               </span>
+               <div className="text-[10px] text-zinc-500 uppercase tracking-widest leading-none font-bold">Govt Exam Specialist</div>
             </div>
           </div>
           <div className="hidden sm:flex items-center gap-4 text-xs font-bold text-zinc-500 uppercase tracking-wider">
-            <span>SSC</span>
+            <span className="hover:text-amber-500 transition-colors cursor-default">SSC</span>
             <span className="w-1 h-1 rounded-full bg-zinc-700"></span>
-            <span>Bank PO</span>
+            <span className="hover:text-amber-500 transition-colors cursor-default">Bank PO</span>
             <span className="w-1 h-1 rounded-full bg-zinc-700"></span>
-            <span>UPSC CSAT</span>
+            <span className="hover:text-amber-500 transition-colors cursor-default">UPSC CSAT</span>
           </div>
         </nav>
       )}
 
       <main className="container mx-auto">
         {error && (
-          <div className="max-w-md mx-auto mt-8 bg-red-900/20 border border-red-500/50 text-red-200 px-6 py-4 rounded-xl relative" role="alert">
+          <div className="max-w-md mx-auto mt-8 bg-red-900/20 border border-red-500/50 text-red-200 px-6 py-4 rounded-xl relative animate-bounce" role="alert">
             <strong className="font-bold">System Error: </strong>
             <span className="block sm:inline">{error}</span>
           </div>

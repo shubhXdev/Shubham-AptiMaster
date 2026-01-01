@@ -6,7 +6,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 export const generateQuestions = async (
   subject: Subject,
   difficulty: Difficulty,
-  count: number // Arithmetic: 12, Reasoning: 25
+  count: number 
 ): Promise<Question[]> => {
   const modelName = "gemini-3-flash-preview";
 
@@ -14,41 +14,29 @@ export const generateQuestions = async (
   
   if (subject === Subject.ARITHMETIC) {
     prompt = `
-      You are 'Shubham AptiMaster', a strict examiner for top-tier Indian Government Competitive Exams (SSC CGL, IBPS PO, UPSC CSAT).
-      Generate exactly ${count} (12) unique, high-quality Arithmetic questions.
-      Difficulty: ${difficulty}.
-      
-      MANDATORY TOPIC DISTRIBUTION (1 Question from each, fill remaining with high-weightage topics like DI or Simplification):
-      1. Percentage
-      2. Average
-      3. Ratio & Proportion
-      4. Partnership
-      5. Profit and Loss
-      6. Unitary Method
-      7. Time and Work
-      8. Time and Distance
-      9. Simplification
-      10. Data Interpretation (Create a text-based Caselet or simple tabular data in the question text).
-
-      Context: Questions must be conceptually tricky but solvable within 30-45 seconds using shortcuts.
-      Do not use complex LaTeX. Use plain text.
+      You are 'Shubham AptiMaster', a strict examiner for top-tier Indian Government Competitive Exams.
+      Generate exactly ${count} unique Arithmetic questions. Difficulty: ${difficulty}.
+      Distribution: Percentage, Average, Ratio, Partnership, P&L, Unitary, Time/Work, Time/Distance, Simplification, DI, Unit, Area, Interest, LCM/HCF, Ages.
+      Context: Concepts must be tricky but solvable using Shubham Shortcuts.
     `;
-  } else {
+  } else if (subject === Subject.REASONING) {
     prompt = `
-      You are 'Shubham AptiMaster', a strict examiner for Indian Government Exams.
-      Generate exactly ${count} (25) unique Reasoning questions.
+      You are 'Shubham AptiMaster'. Generate exactly ${count} Reasoning questions. Difficulty: ${difficulty}.
+      Distribution: Verbal (Syllogism, Blood Relations, Coding) and Non-Verbal (SVG figures for 5-8 questions).
+    `;
+  } else if (subject === Subject.THINKING) {
+    prompt = `
+      You are 'Shubham AptiMaster'. Generate exactly 2 high-level Cognitive Thinking questions. 
       Difficulty: ${difficulty}.
       
-      MANDATORY RULES:
-      1. **Topic Mix**: Include both Verbal (Syllogism, Blood Relations, Coding-Decoding) and **Non-Verbal** (Series, Analogies, Odd One Out, Mirror Images).
-      2. **Non-Verbal Questions (Important)**: For at least 5-8 questions (Series, Figure Counting, Mirror Images), you MUST provide a visual representation. 
-         - Since you are a text AI, you must generate a **clean, simple SVG code string** in the 'figureSVG' field.
-         - The SVG should draw the 'Problem Figures' and the 'Answer Figures' (labeled A, B, C, D) inside one canvas.
-         - Use white or light-colored strokes (stroke="currentColor" or stroke="#e4e4e7") suitable for a dark background.
-         - If a question has a figure, the 'options' array should simply be ["Figure A", "Figure B", "Figure C", "Figure D"].
-      3. **Uniqueness**: Do not repeat logic consecutively.
+      Structure:
+      Question 1: Problem Solving (Situation-based Mock). A real-world administrative or ethical dilemma found in Civil Services or Management exams.
+      Question 2: Critical Thinking. Logic-heavy analysis involving assumptions, inferences, or strengthening/weakening arguments.
       
-      Context: Solvable within 30 seconds avg.
+      Special Requirements:
+      - For each question, provide a 'strategyRules' list (3-4 bullet points on HOW to approach this specific type of thinking problem).
+      - For each question, provide 2 'hints' that guide the user without revealing the answer.
+      - Ensure the situations are complex and require deep analytical power.
     `;
   }
 
@@ -58,25 +46,14 @@ export const generateQuestions = async (
       type: Type.OBJECT,
       properties: {
         id: { type: Type.INTEGER },
-        topic: { type: Type.STRING, description: "The specific topic of the question" },
-        text: { type: Type.STRING, description: "The question text. For non-verbal, say 'Study the figure below and select the correct option:'" },
-        figureSVG: { 
-          type: Type.STRING, 
-          description: "Optional. A complete, valid <svg> string for non-verbal reasoning questions. Must include viewBox. Stroke colors should be light/white." 
-        },
-        options: { 
-          type: Type.ARRAY, 
-          items: { type: Type.STRING },
-          description: "An array of 4 possible answers. For non-verbal, use ['A', 'B', 'C', 'D']"
-        },
-        correctAnswerIndex: { 
-          type: Type.INTEGER, 
-          description: "The index (0-3) of the correct answer" 
-        },
-        explanation: { 
-          type: Type.STRING, 
-          description: "Detailed step-by-step solution using short-cut methods suitable for exams." 
-        }
+        topic: { type: Type.STRING },
+        text: { type: Type.STRING },
+        figureSVG: { type: Type.STRING },
+        options: { type: Type.ARRAY, items: { type: Type.STRING } },
+        correctAnswerIndex: { type: Type.INTEGER },
+        explanation: { type: Type.STRING },
+        hints: { type: Type.ARRAY, items: { type: Type.STRING } },
+        strategyRules: { type: Type.ARRAY, items: { type: Type.STRING } }
       },
       required: ["id", "text", "options", "correctAnswerIndex", "explanation", "topic"]
     }
@@ -89,7 +66,7 @@ export const generateQuestions = async (
       config: {
         responseMimeType: "application/json",
         responseSchema: questionSchema,
-        systemInstruction: "You are a competitive exam setter. Output raw JSON only. For non-verbal reasoning, ensure SVGs are valid and visible on dark backgrounds."
+        systemInstruction: "You are a competitive exam setter. Output raw JSON only. Focus on strengthening cognition and analytical power."
       }
     });
 
@@ -97,14 +74,9 @@ export const generateQuestions = async (
     if (!jsonText) throw new Error("No response from AI");
 
     const questions = JSON.parse(jsonText) as Question[];
-    
-    return questions.map((q, index) => ({
-      ...q,
-      id: index // Re-index to ensure safety
-    }));
-
+    return questions.map((q, index) => ({ ...q, id: index }));
   } catch (error) {
     console.error("GenAI Error:", error);
-    throw new Error("Exam generation failed. Please try again.");
+    throw new Error("Exam generation failed.");
   }
 };

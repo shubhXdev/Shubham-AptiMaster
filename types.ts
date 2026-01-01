@@ -1,11 +1,13 @@
 export enum Subject {
   ARITHMETIC = 'Arithmetic',
-  REASONING = 'Reasoning'
+  REASONING = 'Reasoning',
+  THINKING = 'Thinking'
 }
 
 export enum Difficulty {
+  EASY = 'Easy',
   MEDIUM = 'Medium',
-  HARD = 'Hard' // Easy removed as per requirement for competitive standard
+  HARD = 'Hard'
 }
 
 export interface Question {
@@ -15,7 +17,9 @@ export interface Question {
   correctAnswerIndex: number;
   explanation: string;
   topic?: string;
-  figureSVG?: string; // Optional field for non-verbal reasoning images
+  figureSVG?: string;
+  hints?: string[]; // New for Thinking section
+  strategyRules?: string[]; // New for Thinking section
 }
 
 export interface QuizConfig {
@@ -27,8 +31,8 @@ export interface QuizConfig {
 
 export interface QuizState {
   currentQuestionIndex: number;
-  answers: Record<number, number>; // questionId -> selectedOptionIndex
-  questionTimes: Record<number, number>; // questionId -> seconds taken
+  answers: Record<number, number>; 
+  questionTimes: Record<number, number>; 
   isFinished: boolean;
   score: number;
   totalTimeTaken: number;
@@ -37,12 +41,12 @@ export interface QuizState {
 
 export interface ExamResult {
   id: string;
-  date: string; // ISO string
+  date: string; 
   subject: Subject;
   difficulty: Difficulty;
   score: number;
   totalQuestions: number;
   accuracy: number;
   timeTaken: number;
-  answers: Record<number, number>; // Store strictly essential data
+  answers: Record<number, number>; 
 }

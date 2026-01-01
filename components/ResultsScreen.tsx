@@ -3,6 +3,7 @@ import { Question, QuizState } from '../types';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Check, X, RotateCcw, Award, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { saveExamResult } from '../services/storageService';
+import BrandLogo from './BrandLogo';
 
 interface ResultsScreenProps {
   questions: Question[];
@@ -27,7 +28,6 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
   const scorePercentage = Math.round((correctCount / questions.length) * 100);
 
   useEffect(() => {
-    // Save to history on mount
     saveExamResult({
       id: Date.now().toString(),
       date: new Date().toISOString(),
@@ -55,33 +55,31 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 pb-20 text-zinc-100">
-      <div className="text-center mb-10 no-print">
-        <h1 className="text-4xl font-bold font-space mb-2">Exam Analysis</h1>
-        <p className="text-zinc-400">Shubham AptiMaster Performance Report</p>
+    <div className="max-w-6xl mx-auto p-6 pb-20 text-zinc-100 animate-fade-in">
+      <div className="flex flex-col items-center text-center mb-10 no-print">
+        <BrandLogo size={64} className="mb-4" />
+        <h1 className="text-4xl font-bold font-space mb-2">Mission Debriefing</h1>
+        <p className="text-zinc-500 font-medium uppercase tracking-[0.2em] text-[10px]">Shubham AptiMaster • Official Performance Report</p>
       </div>
 
       <div className="grid md:grid-cols-12 gap-6 mb-12">
-        {/* Score Card */}
-        <div className="md:col-span-4 bg-zinc-900 p-8 rounded-3xl border border-zinc-800 flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="md:col-span-4 bg-zinc-900 p-8 rounded-3xl border border-zinc-800 flex flex-col items-center justify-center relative overflow-hidden group">
           <div className="text-center z-10">
-            <div className="inline-block p-4 bg-amber-500/10 rounded-full text-amber-500 mb-4">
+            <div className="inline-block p-4 bg-amber-500/10 rounded-full text-amber-500 mb-4 group-hover:scale-110 transition-transform">
                <Award size={48} />
             </div>
             <div className="text-6xl font-extrabold text-white mb-2 font-space">{scorePercentage}%</div>
-            <div className="text-zinc-400 font-medium uppercase tracking-widest text-sm">Overall Score</div>
+            <div className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Net Score Acquired</div>
             <div className="mt-6 flex items-center justify-center gap-4 text-sm">
-                <div className="px-3 py-1 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300">
-                    Accuracy: <span className={accuracy > 80 ? "text-emerald-400" : "text-amber-400"}>{accuracy}%</span>
+                <div className="px-3 py-1 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 font-mono">
+                    ACC: <span className={accuracy > 80 ? "text-emerald-400" : "text-amber-400"}>{accuracy}%</span>
                 </div>
             </div>
           </div>
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl"></div>
         </div>
 
-        {/* Breakdown */}
         <div className="md:col-span-8 bg-zinc-900 p-8 rounded-3xl border border-zinc-800 flex flex-col md:flex-row gap-8 items-center">
             <div className="h-48 w-48 flex-shrink-0 relative">
                 <ResponsiveContainer width="100%" height="100%">
@@ -100,26 +98,27 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
                     </Pie>
                 </PieChart>
                 </ResponsiveContainer>
-                <div className="absolute inset-0 flex items-center justify-center text-zinc-600 font-bold">
-                    {questions.length} Qs
+                <div className="absolute inset-0 flex items-center justify-center flex-col">
+                    <span className="text-white font-bold text-2xl font-space">{questions.length}</span>
+                    <span className="text-[8px] text-zinc-500 uppercase tracking-widest">Questions</span>
                 </div>
             </div>
             
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
                 <div className="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/50">
-                    <div className="flex items-center gap-2 text-emerald-400 font-bold mb-1"><Check size={16} /> Correct</div>
+                    <div className="flex items-center gap-2 text-emerald-400 font-bold mb-1 text-xs uppercase tracking-tighter"><Check size={14} /> Correct</div>
                     <div className="text-2xl font-mono text-white">{correctCount}</div>
                 </div>
                 <div className="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/50">
-                    <div className="flex items-center gap-2 text-red-400 font-bold mb-1"><X size={16} /> Incorrect</div>
+                    <div className="flex items-center gap-2 text-red-400 font-bold mb-1 text-xs uppercase tracking-tighter"><X size={14} /> Incorrect</div>
                     <div className="text-2xl font-mono text-white">{incorrectCount}</div>
                 </div>
                 <div className="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/50">
-                    <div className="flex items-center gap-2 text-zinc-400 font-bold mb-1">Skipped</div>
+                    <div className="flex items-center gap-2 text-zinc-400 font-bold mb-1 text-xs uppercase tracking-tighter">Skipped</div>
                     <div className="text-2xl font-mono text-white">{skippedCount}</div>
                 </div>
                 <div className="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/50">
-                    <div className="flex items-center gap-2 text-amber-400 font-bold mb-1">Time Taken</div>
+                    <div className="flex items-center gap-2 text-amber-400 font-bold mb-1 text-xs uppercase tracking-tighter">Combat Time</div>
                     <div className="text-2xl font-mono text-white">{formatTime(state.totalTimeTaken)}</div>
                 </div>
             </div>
@@ -129,13 +128,13 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
       <div className="flex gap-4 mb-8 border-b border-zinc-800 no-print">
         <button 
             onClick={() => setActiveTab('summary')}
-            className={`pb-4 px-2 text-sm font-bold uppercase tracking-wider transition-colors ${activeTab === 'summary' ? 'text-amber-500 border-b-2 border-amber-500' : 'text-zinc-500 hover:text-zinc-300'}`}
+            className={`pb-4 px-2 text-xs font-bold uppercase tracking-[0.2em] transition-colors ${activeTab === 'summary' ? 'text-amber-500 border-b-2 border-amber-500' : 'text-zinc-500 hover:text-zinc-300'}`}
         >
-            Action Plan
+            Tactical Analysis
         </button>
         <button 
             onClick={() => setActiveTab('solutions')}
-            className={`pb-4 px-2 text-sm font-bold uppercase tracking-wider transition-colors ${activeTab === 'solutions' ? 'text-amber-500 border-b-2 border-amber-500' : 'text-zinc-500 hover:text-zinc-300'}`}
+            className={`pb-4 px-2 text-xs font-bold uppercase tracking-[0.2em] transition-colors ${activeTab === 'solutions' ? 'text-amber-500 border-b-2 border-amber-500' : 'text-zinc-500 hover:text-zinc-300'}`}
         >
             Detailed Solutions
         </button>
@@ -143,24 +142,24 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
       {activeTab === 'summary' && (
         <div className="animate-fade-in no-print">
-            <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 mb-8">
-                <h3 className="text-xl font-bold text-white mb-4">Shubham's Recommendations</h3>
+            <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 mb-8 border-l-4 border-l-red-500">
+                <h3 className="text-xl font-bold text-white mb-6 font-space">Expert Recommendation</h3>
                 <div className="space-y-4">
                     {accuracy < 60 && (
-                        <div className="p-4 bg-red-900/10 border border-red-900/30 rounded-xl text-red-200">
-                            <strong className="block mb-1 text-red-400">Focus Area: Basics</strong>
-                            Your accuracy is below 60%. Please revisit the fundamental concepts of {subject} before taking another mock.
+                        <div className="p-4 bg-red-950/40 border border-red-900/30 rounded-xl text-red-100">
+                            <strong className="block mb-1 text-red-400 uppercase text-xs tracking-wider">Critical Weakness</strong>
+                            Base accuracy is insufficient for selection. Intense revision of {subject} fundamentals required immediately.
                         </div>
                     )}
                     {state.totalTimeTaken > (totalTimeMinutes * 60) * 0.9 && (
-                        <div className="p-4 bg-amber-900/10 border border-amber-900/30 rounded-xl text-amber-200">
-                            <strong className="block mb-1 text-amber-400">Time Management</strong>
-                            You utilized most of the time. Try to use elimination methods for options to speed up.
+                        <div className="p-4 bg-amber-950/40 border border-amber-900/30 rounded-xl text-amber-100">
+                            <strong className="block mb-1 text-amber-400 uppercase text-xs tracking-wider">Time Warning</strong>
+                            You are surviving, not dominating. Optimize your mental math to save at least 5s per question.
                         </div>
                     )}
-                     <div className="p-4 bg-emerald-900/10 border border-emerald-900/30 rounded-xl text-emerald-200">
-                        <strong className="block mb-1 text-emerald-400">Consistency</strong>
-                        Take this test again after 2 days to check retention.
+                     <div className="p-4 bg-emerald-950/40 border border-emerald-900/30 rounded-xl text-emerald-100">
+                        <strong className="block mb-1 text-emerald-400 uppercase text-xs tracking-wider">Next Step</strong>
+                        Mission complete. Analyze mistakes in solutions tab then recalibrate for the next mock.
                     </div>
                 </div>
             </div>
@@ -168,15 +167,15 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
             <div className="flex flex-col sm:flex-row gap-4">
                 <button
                     onClick={onViewAnalytics}
-                    className="flex-1 py-4 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 py-4 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 border border-zinc-700"
                 >
-                    <FileText size={20} /> View Full Analytics
+                    <FileText size={20} /> Full Analytics
                 </button>
                 <button
                     onClick={onRestart}
-                    className="flex-1 py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 py-4 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-red-900/20"
                 >
-                    <RotateCcw size={20} /> Attempt New Exam
+                    <RotateCcw size={20} /> Next Mission
                 </button>
             </div>
         </div>
@@ -202,15 +201,15 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
                   <div className="flex-1 pr-4">
                     <div className="flex items-center gap-3 mb-2">
                         <span className="text-zinc-500 font-mono text-sm">Q.{index + 1}</span>
-                        <span className={`text-xs font-bold uppercase px-2 py-0.5 rounded ${
-                            isCorrect ? 'bg-emerald-500/10 text-emerald-500' : isSkipped ? 'bg-zinc-700 text-zinc-400' : 'bg-red-500/10 text-red-500'
+                        <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded tracking-tighter ${
+                            isCorrect ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : isSkipped ? 'bg-zinc-700 text-zinc-400' : 'bg-red-500/10 text-red-500 border border-red-500/20'
                         }`}>
-                            {isCorrect ? 'Correct' : isSkipped ? 'Skipped' : 'Incorrect'}
+                            {isCorrect ? 'PASSED' : isSkipped ? 'SKIPPED' : 'FAILED'}
                         </span>
-                        <span className={`text-xs font-mono ${timeSpent > 30 ? 'text-red-400' : 'text-zinc-500'}`}>
-                             ⏱ {timeSpent}s
+                        <span className={`text-xs font-mono font-bold ${timeSpent > 30 ? 'text-red-400' : 'text-zinc-500'}`}>
+                             {timeSpent}s
                         </span>
-                        <span className="text-xs bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-700">{q.topic || 'General'}</span>
+                        <span className="text-[10px] bg-zinc-950 text-zinc-500 px-2 py-0.5 rounded border border-zinc-800 uppercase font-black">{q.topic || 'General'}</span>
                     </div>
                     <h3 className="text-lg font-medium text-zinc-200">{q.text}</h3>
                   </div>
@@ -221,7 +220,6 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
                 {(isExpanded || window.matchMedia('print').matches) && (
                     <div className="mt-6 pt-6 border-t border-zinc-800 animate-fade-in">
-                        {/* Render SVG in Solutions */}
                         {q.figureSVG && (
                             <div className="mb-6 p-4 bg-zinc-950 rounded-xl border border-zinc-800 flex justify-center">
                                 <div 
@@ -236,21 +234,22 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
                                 const isSelected = userAnswer === optIdx;
                                 const isActuallyCorrect = optIdx === q.correctAnswerIndex;
                                 return (
-                                <div key={optIdx} className={`p-3 rounded-lg border text-sm flex items-center justify-between ${
-                                    isActuallyCorrect ? 'bg-emerald-900/20 border-emerald-900/50 text-emerald-200' : 
-                                    isSelected ? 'bg-red-900/20 border-red-900/50 text-red-200' : 'bg-zinc-950 border-zinc-800 text-zinc-500'
+                                <div key={optIdx} className={`p-4 rounded-xl border text-sm flex items-center justify-between ${
+                                    isActuallyCorrect ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-100 ring-1 ring-emerald-500/20' : 
+                                    isSelected ? 'bg-red-950/40 border-red-500/30 text-red-100' : 'bg-zinc-950 border-zinc-800 text-zinc-500'
                                 }`}>
-                                    <span className="flex items-center gap-2">
-                                        <span className="opacity-50">{String.fromCharCode(65 + optIdx)}.</span> {opt}
+                                    <span className="flex items-center gap-3">
+                                        <span className="opacity-30 font-bold">{String.fromCharCode(65 + optIdx)}.</span> {opt}
                                     </span>
-                                    {isActuallyCorrect && <Check size={16} />}
-                                    {isSelected && !isActuallyCorrect && <X size={16} />}
+                                    {isActuallyCorrect && <Check size={16} className="text-emerald-500" />}
+                                    {isSelected && !isActuallyCorrect && <X size={16} className="text-red-500" />}
                                 </div>
                                 );
                             })}
                         </div>
-                        <div className="bg-amber-500/5 border border-amber-500/10 p-5 rounded-xl">
-                            <strong className="block mb-2 text-amber-500 text-sm uppercase tracking-wider">Shubham's Logic</strong>
+                        <div className="bg-zinc-950 border border-zinc-800 p-6 rounded-2xl relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
+                            <strong className="block mb-3 text-amber-500 text-xs font-black uppercase tracking-[0.2em]">Strategy Insight</strong>
                             <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap">{q.explanation}</p>
                         </div>
                     </div>
