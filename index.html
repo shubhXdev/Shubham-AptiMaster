@@ -60,13 +60,13 @@
   <script>
     /** 
      * SHIM: process.env
-     * GitHub Pages is a static host and doesn't provide Node.js 'process' objects.
-     * This shim prevents the application from crashing when accessing process.env.API_KEY.
+     * Prevents crashes on static hosts when code accesses process.env.
      */
-    window.process = window.process || { env: {} };
+    window.process = window.process || {};
+    window.process.env = window.process.env || {};
   </script>
   <!-- Entry point for the application logic -->
-  <script type="module" crossorigin src="/Shubham-AptiMaster/assets/index-C_vbwv06.js"></script>
+  <script type="module" crossorigin src="./assets/index-C_vbwv06.js"></script>
 </head>
 
 <body class="bg-zinc-950 text-zinc-100 antialiased selection:bg-amber-500 selection:text-black">
