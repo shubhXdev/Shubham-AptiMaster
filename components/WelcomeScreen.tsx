@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Subject, Difficulty, QuizConfig } from '../types';
-import { BookOpen, Brain, Play, BarChart2, ShieldCheck, Crown, Lightbulb } from 'lucide-react';
+import { BookOpen, Brain, Play, BarChart2, ShieldCheck, Crown, Lightbulb, RefreshCw, Zap } from 'lucide-react';
 import { getTotalAttempts } from '../services/storageService';
 import BrandLogo from './BrandLogo';
 
@@ -13,12 +13,14 @@ interface WelcomeScreenProps {
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onViewAnalytics, isLoading }) => {
   const [subject, setSubject] = useState<Subject>(Subject.ARITHMETIC);
   const [difficulty, setDifficulty] = useState<Difficulty>(Difficulty.EASY);
+  const [attemptCount, setAttemptCount] = useState(0);
   
   useEffect(() => {
-    const totalAttempts = getTotalAttempts();
-    if (totalAttempts > 120) {
+    const total = getTotalAttempts();
+    setAttemptCount(total);
+    if (total > 120) {
       setDifficulty(Difficulty.HARD);
-    } else if (totalAttempts > 50) {
+    } else if (total > 50) {
       setDifficulty(Difficulty.MEDIUM);
     } else {
       setDifficulty(Difficulty.EASY);
@@ -48,22 +50,27 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onViewAnalytics,
 
   return (
     <div className="max-w-6xl mx-auto p-6 animate-fade-in text-zinc-100">
-      <div className="text-center mb-16 pt-10">
+      <div className="text-center mb-12 pt-10">
         <div className="flex justify-center mb-8 relative">
            <div className="absolute inset-0 bg-red-500/20 blur-[60px] rounded-full scale-150 animate-pulse"></div>
            <BrandLogo size={140} className="z-10 drop-shadow-[0_0_30px_rgba(239,68,68,0.4)]" />
         </div>
         
-        <div className="inline-flex items-center justify-center p-3 mb-6 bg-zinc-900 rounded-2xl border border-zinc-800">
-          <Crown className="text-amber-500 w-6 h-6 mr-2" />
-          <span className="text-zinc-400 font-bold tracking-[0.2em] text-[10px] uppercase">Elite Paramilitary Standard Prep</span>
+        <div className="inline-flex items-center justify-center p-3 mb-6 bg-zinc-900 rounded-2xl border border-zinc-800 gap-4">
+          <div className="flex items-center text-amber-500 text-[10px] font-black uppercase tracking-widest border-r border-zinc-800 pr-4">
+            <Crown className="w-4 h-4 mr-2" /> Elite Standards
+          </div>
+          <div className="flex items-center text-emerald-500 text-[10px] font-black uppercase tracking-widest">
+            <Zap className="w-3 h-3 mr-2 text-emerald-400" /> New Mission: #{attemptCount + 1}
+          </div>
         </div>
 
         <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight font-space">
           Shubham <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">AptiMaster</span>
         </h1>
         <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-          The Gold Standard for <span className="text-white font-medium italic underline decoration-red-500 underline-offset-4">Competitive Exam</span> Mastery.
+          Questions refresh <span className="text-white font-medium italic underline decoration-emerald-500 underline-offset-4 decoration-2">with every attempt</span>.
+          <br/><span className="text-zinc-600 text-sm mt-2 block">Systematic topic rotation ensures 100% syllabus mastery.</span>
         </p>
       </div>
 
@@ -81,9 +88,10 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onViewAnalytics,
             <div className={`p-4 rounded-2xl ${subject === Subject.ARITHMETIC ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
               <BookOpen size={24} />
             </div>
+            {subject === Subject.ARITHMETIC && <span className="text-[8px] font-black text-amber-500 bg-amber-500/10 px-2 py-1 rounded-full uppercase tracking-tighter">Serieswise Rotation</span>}
           </div>
           <h3 className="text-xl font-bold mb-2">Arithmetic</h3>
-          <p className="text-zinc-400 text-xs mb-6 leading-relaxed">16 Qs across 15 Core Chapters. Strict 30s Pace.</p>
+          <p className="text-zinc-400 text-xs mb-6 leading-relaxed">16 Qs. Topics change per attempt following the official chapter series.</p>
           <div className="flex gap-2 text-[10px] font-mono font-bold text-zinc-500">
             <span className="bg-zinc-800 px-2 py-1 rounded">16 Qs</span>
             <span className="bg-zinc-800 px-2 py-1 rounded">08 Mins</span>
@@ -105,7 +113,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onViewAnalytics,
             </div>
           </div>
           <h3 className="text-xl font-bold mb-2">Reasoning</h3>
-          <p className="text-zinc-400 text-xs mb-6 leading-relaxed">25 Qs. Verbal & Non-Verbal logic puzzles.</p>
+          <p className="text-zinc-400 text-xs mb-6 leading-relaxed">25 Qs. Fresh verbal & visual logic patterns generated for every single mission.</p>
           <div className="flex gap-2 text-[10px] font-mono font-bold text-zinc-500">
             <span className="bg-zinc-800 px-2 py-1 rounded">25 Qs</span>
             <span className="bg-zinc-800 px-2 py-1 rounded">12.5 Mins</span>
@@ -127,7 +135,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onViewAnalytics,
             </div>
           </div>
           <h3 className="text-xl font-bold mb-2">Thinking</h3>
-          <p className="text-zinc-400 text-xs mb-6 leading-relaxed">2 Elite Qs. Situation Mock & Critical analysis.</p>
+          <p className="text-zinc-400 text-xs mb-6 leading-relaxed">2 Elite Qs. Built to strengthen your analytical power with new logic daily.</p>
           <div className="flex gap-2 text-[10px] font-mono font-bold text-zinc-500">
             <span className="bg-zinc-800 px-2 py-1 rounded">02 Qs</span>
             <span className="bg-zinc-800 px-2 py-1 rounded">05 Mins</span>
@@ -151,7 +159,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onViewAnalytics,
             <BarChart2 size={20} /> History
           </button>
           <button onClick={handleStart} disabled={isLoading} className={`flex-1 lg:flex-none flex items-center justify-center gap-3 px-10 py-5 bg-gradient-to-br from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold rounded-2xl transition-all shadow-xl shadow-red-900/20 transform active:scale-95 group ${isLoading ? 'opacity-70 cursor-wait' : ''}`}>
-            {isLoading ? <span className="flex items-center gap-3"><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>Constructing...</span> : <>Mission Start <Play size={20} fill="currentColor" /></>}
+            {isLoading ? <span className="flex items-center gap-3"><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>Constructing Exam...</span> : <>Mission Start <Play size={20} fill="currentColor" /></>}
           </button>
         </div>
       </div>

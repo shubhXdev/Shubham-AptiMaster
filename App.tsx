@@ -6,6 +6,7 @@ import AnalyticsScreen from './components/AnalyticsScreen';
 import BrandLogo from './components/BrandLogo';
 import { QuizConfig, Question, QuizState, Subject } from './types';
 import { generateQuestions } from './services/geminiService';
+import { getTotalAttempts } from './services/storageService';
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<'welcome' | 'quiz' | 'results' | 'analytics'>('welcome');
@@ -21,10 +22,14 @@ const App: React.FC = () => {
     setConfig(newConfig);
 
     try {
+      // Get current total attempts to drive rotation
+      const attemptCount = getTotalAttempts();
+      
       const generatedQuestions = await generateQuestions(
         newConfig.subject,
         newConfig.difficulty,
-        newConfig.questionCount
+        newConfig.questionCount,
+        attemptCount
       );
       setQuestions(generatedQuestions);
       setAppState('quiz');

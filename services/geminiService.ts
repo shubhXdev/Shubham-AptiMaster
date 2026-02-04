@@ -3,40 +3,72 @@ import { Subject, Difficulty, Question } from "../types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
+// Systematic Topic List for Serieswise Rotation
+const ARITHMETIC_TOPICS = [
+  "Percentage", "Profit and Loss", "Interest (SI/CI)", "Ratio & Proportion", 
+  "Average", "Ages", "Partnership", "Time and Work", "Time and Distance", 
+  "Simplification", "LCM and HCF", "Unitary Method", "Mensuration (Area/Volume)", 
+  "Data Interpretation", "Number System (Unit Digit)"
+];
+
 export const generateQuestions = async (
   subject: Subject,
   difficulty: Difficulty,
-  count: number 
+  count: number,
+  attemptCount: number // Added to drive serieswise rotation per attempt
 ): Promise<Question[]> => {
   const modelName = "gemini-3-flash-preview";
+  
+  // Use a random mission ID + attempt count to force total uniqueness per click
+  const missionId = Math.random().toString(36).substring(7).toUpperCase();
+  
+  // Calculate starting topic for "Serieswise" rotation based on total attempts
+  // This ensures that Attempt 1 starts with Topic A, Attempt 2 with Topic B, etc.
+  const startTopicIndex = attemptCount % ARITHMETIC_TOPICS.length;
+  const rotatedTopics = [
+    ...ARITHMETIC_TOPICS.slice(startTopicIndex),
+    ...ARITHMETIC_TOPICS.slice(0, startTopicIndex)
+  ];
 
   let prompt = "";
   
   if (subject === Subject.ARITHMETIC) {
     prompt = `
-      You are 'Shubham AptiMaster', a strict examiner for top-tier Indian Government Competitive Exams.
-      Generate exactly ${count} unique Arithmetic questions. Difficulty: ${difficulty}.
-      Distribution: Percentage, Average, Ratio, Partnership, P&L, Unitary, Time/Work, Time/Distance, Simplification, DI, Unit, Area, Interest, LCM/HCF, Ages.
-      Context: Concepts must be tricky but solvable using Shubham Shortcuts.
+      CURRENT MISSION: #${attemptCount + 1} | SESSION_ID: ${missionId}.
+      You are 'Shubham AptiMaster'. Generate ${count} (16) UNIQUE Arithmetic questions.
+      
+      SERIESWISE ROTATION RULE:
+      This is Attempt #${attemptCount + 1}. You must rotate the primary focus.
+      Prioritize topics in this specific series for this attempt: ${rotatedTopics.join(", ")}.
+      
+      STRICT UNIQUENESS RULES:
+      1. This is a NEW attempt. NEVER repeat scenarios, names, or values from previous generated sets.
+      2. Use complex, realistic competitive exam values (avoid simple 10/20/50).
+      3. Create fresh scenarios based on modern industry, trade, or governance.
+      4. Ensure exactly one question from each of the rotated topics listed above to cover the syllabus systematically.
+      5. The solution must be solvable in 30s using a 'Shubham Shortcut' logic explained in the explanation.
     `;
   } else if (subject === Subject.REASONING) {
     prompt = `
-      You are 'Shubham AptiMaster'. Generate exactly ${count} Reasoning questions. Difficulty: ${difficulty}.
-      Distribution: Verbal (Syllogism, Blood Relations, Coding) and Non-Verbal (SVG figures for 5-8 questions).
+      CURRENT MISSION: #${attemptCount + 1} | SESSION_ID: ${missionId}.
+      Generate ${count} (25) Reasoning questions. Difficulty: ${difficulty}.
+      Include 8 Non-Verbal questions with distinct SVG figures.
+      Change the logic patterns entirely for this attempt. Vary coding logic, blood relation complexity, and seating arrangement constraints.
     `;
   } else if (subject === Subject.THINKING) {
     prompt = `
-      You are 'Shubham AptiMaster'. Generate exactly 2 high-level Cognitive Thinking questions. 
-      Difficulty: ${difficulty}.
+      CURRENT MISSION: #${attemptCount + 1} | SESSION_ID: ${missionId}.
+      Generate 2 ELITE Cognitive Power questions.
       
-      Structure:
-      Question 1: Problem Solving (Situation-based Mock). A real-world administrative or ethical dilemma found in Civil Services or Management exams.
-      Question 2: Critical Thinking. Logic-heavy analysis involving assumptions, inferences, or strengthening/weakening arguments.
+      QUESTION 1 (Situation Mock): 
+      Provide a fresh administrative dilemma. The user must analyze 4 possible actions.
       
-      Special Requirements:
-      - For each question, provide a 'strategyRules' list (3-4 bullet points on HOW to approach this specific type of thinking problem).
-      - For each question, provide 2 'hints' that guide the user without revealing the answer.
-      - Ensure the situations are complex and require deep analytical power.
+      QUESTION 2 (Critical Thinking): 
+      A complex logical argument or scientific hypothesis. The user must identify the hidden assumption or weakening fact.
+      
+      REQUIRED:
+      - 'strategyRules': 3 specific logical steps to decode this type of problem.
+      - 'hints': 2 subtle nudges that encourage 'lateral thinking' without giving away the answer.
     `;
   }
 
@@ -66,7 +98,10 @@ export const generateQuestions = async (
       config: {
         responseMimeType: "application/json",
         responseSchema: questionSchema,
-        systemInstruction: "You are a competitive exam setter. Output raw JSON only. Focus on strengthening cognition and analytical power."
+        systemInstruction: `You are 'Shubham AptiMaster', a high-stakes competitive exam setter. 
+        Mission context: Attempt #${attemptCount + 1}. 
+        Your absolute priority is NO REPETITION. Every 'Mission Start' click must feel like a brand-new, unseen exam paper.
+        For Arithmetic, follow the serieswise rotation strictly.`
       }
     });
 
@@ -77,6 +112,6 @@ export const generateQuestions = async (
     return questions.map((q, index) => ({ ...q, id: index }));
   } catch (error) {
     console.error("GenAI Error:", error);
-    throw new Error("Exam generation failed.");
+    throw new Error("Failed to construct the New Mission. Please retry.");
   }
 };
